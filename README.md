@@ -1,2 +1,2 @@
-# LSPWaffle
-A tool for facilitating the process of installing language servers.
+# LSPizza
+A tool for facilitating the process of managing language servers.
