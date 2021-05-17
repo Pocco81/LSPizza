@@ -19,17 +19,17 @@
 	# GNU sed
 	# Bash
 
+PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+this_scrpt=`basename "$0"`
 
-# TODO: Didn't finish --scan flag
-
-source config.sh
-source modules/utils/scanner.sh
-source modules/utils/nodejs.sh
-source modules/utils/system.sh
-source modules/utils/append_file.sh
-source modules/utils/text/banner.sh
-source modules/utils/text/printer.sh
-for ls_f in modules/lang_servers/*.sh; do source $ls_f; done
+source "${PARENT_PATH}/config.sh"
+source "${PARENT_PATH}/modules/utils/nodejs.sh"
+source "${PARENT_PATH}/modules/utils/system.sh"
+source "${PARENT_PATH}/modules/utils/append_file.sh"
+source "${PARENT_PATH}/modules/utils/text/banner.sh"
+source "${PARENT_PATH}/modules/utils/text/printer.sh"
+source "${PARENT_PATH}/modules/utils/scanner.sh"
+for ls_f in $PARENT_PATH/modules/lang_servers/*.sh; do source $ls_f; done
 
 
 script_help=$( cat << EOF
@@ -44,6 +44,11 @@ Arguments:
 								in a string separated by commas.
     -u,--unstall                Uninstall lang severs for list of languages passed
 								in a string separated by commas.
+	-l,--list					List languages that have a server installed.
+	-v,--verbose				Add verbosity to the operation(s).
+	-s,--scan					Print whether the language(s) servers'/dependencies'
+								are installed or not. Recieves string with languages
+								separated by commas or nothing, to scan every language.
 
 EOF
 )
@@ -70,7 +75,8 @@ if [[ -n "$1" ]]; then
 
 					shift
 				else
-					prompt -w "WARNING: '-i' requires a non-empty option argument."
+					# prompt -w "WARNING: '-i' requires a non-empty option argument."
+					scan_lang_servers -i "${supported_langs[@]}"
 				fi
 
 				;;

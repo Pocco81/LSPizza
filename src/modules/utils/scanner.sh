@@ -148,7 +148,8 @@ function scan_lang_servers() {
 
 	for ls in "${ls_langs[@]}"; do
 
-		complex_heading $ls
+		if [[ "$to_do" != "-s" ]]; then complex_heading $ls; fi
+
 		__lspizza_verbose_print "Checking if '${ls}' is supported"
 
 		if [[ " ${supported_langs[@]} " =~ " ${ls} " ]]; then		# array contains val

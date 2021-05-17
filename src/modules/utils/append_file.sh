@@ -1,14 +1,6 @@
 #!/bin/bash
 
 
-function append_to_file() {
-:
-}
-
-function delete_from_file() {
-:
-}
-
 function assert_file () {
 
 	# operations can be either r(ead), d(elete), a(ppend)
@@ -28,7 +20,7 @@ function assert_file () {
 		done < $PATH_TO_LIST_FILE
 
 		echo ""
-		prompt -i "You have: '$((n-1))' with language servers"
+		prompt -i "You have: '$((n-1))' languages with servers."
 
 	elif [[ "$operation" == "-d" ]]; then
 		n=1
