@@ -9,21 +9,15 @@ source $PATH_TO_SYSTEM
 
 function install_lua() {
 
-	local installation_dir="$HOME/.config/lua-language-server"
+	#git clone https://github.com/sumneko/lua-language-server $installation_dir
+	#( cd ~/.config/lua-language-server/ && git submodule update --init --recursive )
 
-	if [[ $(assert_existence_other_package $installation_dir) == 1 ]]; then
-		echo "is already installed, will not install..."
-	else
-		echo "is not installed, will install..."
-		#git clone https://github.com/sumneko/lua-language-server $installation_dir
-		#( cd ~/.config/lua-language-server/ && git submodule update --init --recursive )
-		if [[ $(get_platform) == "Linux" ]]; then
-			#(cd ~/.config/lua-language-server/3rd/luamake/ && compile/install.sh)
-			#(cd ~/.config/lua-language-server/ &&  ./3rd/luamake/luamake rebuild)
-			:
-		fi
+	__lspizza_verbose_print "Checking if Linux is the current platform"
+	if [[ $(get_platform) == "Linux" ]]; then
+		#(cd ~/.config/lua-language-server/3rd/luamake/ && compile/install.sh)
+		#(cd ~/.config/lua-language-server/ &&  ./3rd/luamake/luamake rebuild)
+		:
 	fi
-
 
 }
 

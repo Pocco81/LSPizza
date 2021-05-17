@@ -9,12 +9,19 @@
 # + add verbosity opt
 # + add parallel downloading
 # + add option for printing installed lang servers
-#
+# + add oneline installer
+# + add <Tab> completion
+
+
+
+# TODO: Didn't finish --scan flag
 
 source config.sh
 source modules/utils/scanner.sh
 source modules/utils/nodejs.sh
 source modules/utils/system.sh
+source modules/utils/text/banner.sh
+source modules/utils/text/printer.sh
 for ls_f in modules/lang_servers/*.sh; do source $ls_f; done
 
 
@@ -35,66 +42,6 @@ EOF
 )
 
 
-function complex_heading() {
-    echo -e "\n\n${banner}\n\tInstalling: language server for '${1}'\n${banner}"
-}
-
-function simple_heading() {
-	echo -e "\n\n${pfx} ${1}"
-}
-
-function fn_exists() { declare -F "$1" > /dev/null; }
-
-function install_lang_servers() {
-
-	ls_langs=("$@")
-
-	for ls in "${ls_langs[@]}"; do
-
-		if [[ " ${supported_langs[@]} " =~ " ${ls} " ]]; then		# array contains val
-			if fn_exists install_$ls ; then
-				complex_heading $ls
-				install_$ls
-			else
-				simple_heading "ERROR: The process for installing the language server for '${ls}' is currently unsupported/under development"
-			fi
-		else
-			simple_heading "ERROR: Support for the language '${ls}' is currently unsupported/under development"
-		fi
-
-	done
-
-}
-
-
-function uninstall_lang_servers() {
-
-	ls_langs=("$@")
-
-	for ls in "${ls_langs[@]}"; do
-
-		if [[ " ${supported_langs[@]} " =~ " ${ls} " ]]; then		# array contains val
-			if fn_exists uninstall_$ls ; then
-				complex_heading $ls
-				uninstall_$ls
-			else
-				simple_heading "ERROR: The process for uninstalling the language server for '${ls}' is currently unsupported/under development"
-			fi
-		else
-			simple_heading "ERROR: Support for the language '${ls}' is currently unsupported/under development"
-		fi
-
-	done
-
-}
-
-
-function die() {
-	printf '%s\n' "$1" >&2
-	exit 1
-}
-
-
 if [[ -n "$1" ]]; then
 	while :; do
 		case $1 in
@@ -104,34 +51,58 @@ if [[ -n "$1" ]]; then
 				;;
 			-i|--install)       # Takes an option argument; ensure it has been specified.
 
-				if [[ "$2" ]]; then
-					# grab langs, remove spaces and commas
-					languages=${2//[[:blank:]]/}
-					IFS=',' read -ra to_install_array <<< "$languages"
+				__lspizza_verbose_print "Checking for a second argument"
 
-					install_lang_servers "${to_install_array[@]}"
+				if [[ "$2" ]]; then
+					__lspizza_verbose_print "Parsing args"
+
+					languages=${2//[[:blank:]]/}
+					IFS=',' read -ra to_scan_array <<< "$languages"
+
+					scan_lang_servers -i "${to_scan_array[@]}"
+
 					shift
 				else
-					die 'ERROR: "-i" requires a non-empty option argument.'
+					prompt -w "WARNING: '-i' requires a non-empty option argument."
 				fi
 
 				;;
 			-u|--uninstall)
 
-				if [[ "$2" ]]; then
-					# grab langs, remove spaces and commas
-					languages=${2//[[:blank:]]/}
-					IFS=',' read -ra to_uninstall_array <<< "$languages"
+				__lspizza_verbose_print "Checking for a second argument"
 
-					uninstall_lang_servers "${to_uninstall_array[@]}"
+				if [[ "$2" ]]; then
+					__lspizza_verbose_print "Parsing args"
+
+					languages=${2//[[:blank:]]/}
+					IFS=',' read -ra to_scan_array <<< "$languages"
+
+					scan_lang_servers -u "${to_scan_array[@]}"
 
 					shift
 				else
-					die 'ERROR: "-u" requires a non-empty option argument.'
+					prompt -w "WARNING: '-u' requires a non-empty option argument."
 				fi
 
 				;;
+
+			-v|--verbosity)
+				__lspizza_verbosity+=1
+				;;
 			-s|--scan)
+
+				if [[ "$2" ]]; then
+					__lspizza_verbose_print "Parsing args"
+
+					languages=${2//[[:blank:]]/}
+					IFS=',' read -ra to_scan_array <<< "$languages"
+
+					scan_lang_servers -s "${to_scan_array[@]}"
+
+					shift
+				else
+					prompt -w "WARNING: '-u' requires a non-empty option argument."
+				fi
 
 				;;
 			--file=?*)
@@ -139,10 +110,10 @@ if [[ -n "$1" ]]; then
 				# echo "$file"
 				;;
 			--file=)         # Handle the case of an empty --file=
-				die 'ERROR: "--file" requires a non-empty option argument.'
+				# die 'ERROR: "--file" requires a non-empty option argument.'
 				;;
 			-?*)
-				printf 'WARNING: Unknown option (ignored): %s\n' "$1" >&2
+				prompt -e "WARNING: Unknown option (ignored): $1"
 				;;
 			*)               # Default case: No more options, so break out of the loop.
 				break

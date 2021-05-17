@@ -7,12 +7,10 @@ PATH_TO_SYSTEM=${PARENT_PATH/"lang_servers"/"utils/system.sh"}
 source $PATH_TO_SYSTEM
 
 function install_rust() {
-	if [[ ! -e ~/.local/bin/rust-analyzer ]]; then
-		mkdir -p ${LSP_BIN_PATH}
-		curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-$(get_platform) -o ~/.local/bin/rust-analyzer
-		chmod +x ~/.local/bin/rust-analyzer
-	else
-		:
-	fi
+
+		# mkdir -p ${LSP_BIN_PATH}
+		# curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-$(get_platform) -o ~/.local/bin/rust-analyzer
+		# chmod +x ~/.local/bin/rust-analyzer
+	:
 }
 

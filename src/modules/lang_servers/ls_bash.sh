@@ -2,6 +2,6 @@
 
 
 function install_bash() {
-	node_install_if_exists bash-language-server
+	install_node_packages $@
 }
 

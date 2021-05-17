@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+function fn_exists() { declare -F "$1" > /dev/null; }
 
 function get_platform() {
     case "$(uname -s)" in
