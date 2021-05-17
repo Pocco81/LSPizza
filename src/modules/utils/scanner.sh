@@ -35,7 +35,7 @@ function assert_ius_args () {
 	case ${to_do} in
 		"-i"|"--install")
 			if fn_exists install_$ls ; then
-				complex_heading $ls
+				# complex_heading $ls
 				eval $func_for_install
 			else
 				prompt -e $(simple_heading "ERROR: The process for uninstalling the language server for '${ls}' is currently under development")
@@ -43,7 +43,7 @@ function assert_ius_args () {
 			;;
 		"-u"|"--uninstall")
 			if fn_exists uninstall_$ls ; then
-				complex_heading $ls
+				# complex_heading $ls
 				eval $func_for_uninstall
 			else
 				prompt -e $(simple_heading "ERROR: The process for uninstalling the language server for '${ls}' is currently under development")
@@ -62,16 +62,33 @@ function assert_ius_args () {
 function main_assert_node() {
 
 	to_eval=$3
+	operation=$4
 
 	function test_if_eval { if [[ "$to_eval" != "NONE" ]]; then eval $to_eval; else : ; fi; }
 
 	for pkg in "${node_packages[@]}"; do
 		if [[ $(assert_existence_node_package $pkg) == 1 ]]; then
 			prompt -i "${1/"<blank>"/"$pkg"}"
-			test_if_eval
+			if [[ "$to_eval" == "install_$ls" ]]; then
+				# test_if_eval
+				assert_file -a "${ls}"
+			elif [[ "$to_eval" == "uninstall_$ls" ]]; then
+				test_if_eval
+				assert_file -d "${ls}"
+			else
+				assert_file -a "${ls}"
+			fi
 		else
 			prompt -i "${2/"<blank>"/"$pkg"}"
-			test_if_eval
+			if [[ "$to_eval" == "install_$ls" ]]; then
+				test_if_eval
+				assert_file -a "${ls}"
+			elif [[ "$to_eval" == "uninstall_$ls" ]]; then
+				# test_if_eval
+				assert_file -d "${ls}"
+			else
+				assert_file -d "${ls}"
+			fi
 		fi
 	done
 
@@ -85,10 +102,26 @@ function main_assert_other() {
 
 	if [[ $(assert_existence_other_package ${installable_by_other_langs[${ls}]}) == 1 ]]; then
 		prompt -i "$1"
-		test_if_eval
+		if [[ "$to_eval" == "install_$ls" ]]; then
+			# test_if_eval
+			assert_file -a "${ls}"
+		elif [[ "$to_eval" == "uninstall_$ls" ]]; then
+			test_if_eval
+			assert_file -d "${ls}"
+		else
+			assert_file -a "${ls}"
+		fi
 	else
 		prompt -i "$2"
-		test_if_eval
+		if [[ "$to_eval" == "install_$ls" ]]; then
+			test_if_eval
+			assert_file -a "${ls}"
+		elif [[ "$to_eval" == "uninstall_$ls" ]]; then
+			# test_if_eval
+			assert_file -d "${ls}"
+		else
+			assert_file -d "${ls}"
+		fi
 	fi
 }
 
@@ -115,6 +148,7 @@ function scan_lang_servers() {
 
 	for ls in "${ls_langs[@]}"; do
 
+		complex_heading $ls
 		__lspizza_verbose_print "Checking if '${ls}' is supported"
 
 		if [[ " ${supported_langs[@]} " =~ " ${ls} " ]]; then		# array contains val

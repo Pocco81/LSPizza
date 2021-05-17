@@ -2,6 +2,7 @@
 
 
 LSP_BIN_PATH=$HOME/.local/bin
+PATH_TO_LIST_FILE=/tmp/test_lspizza/control_list.txt
 __lspizza_verbosity=0
 pfx="~~~~~~~~~~~~~~~~~→"
 banner="-----------------------------↓↓---------------------------------"

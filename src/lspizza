@@ -11,7 +11,13 @@
 # + add option for printing installed lang servers
 # + add oneline installer
 # + add <Tab> completion
+# + add menu (TUI)
+# + add list of dependencies
 
+
+# dependencies
+	# GNU sed
+	# Bash
 
 
 # TODO: Didn't finish --scan flag
@@ -20,6 +26,7 @@ source config.sh
 source modules/utils/scanner.sh
 source modules/utils/nodejs.sh
 source modules/utils/system.sh
+source modules/utils/append_file.sh
 source modules/utils/text/banner.sh
 source modules/utils/text/printer.sh
 for ls_f in modules/lang_servers/*.sh; do source $ls_f; done
@@ -101,8 +108,21 @@ if [[ -n "$1" ]]; then
 
 					shift
 				else
-					prompt -w "WARNING: '-u' requires a non-empty option argument."
+					scan_lang_servers -s "${supported_langs[@]}"
 				fi
+
+				;;
+			-l|--list)
+
+				echo
+
+				prompt -w "Performing a preliminary scan...\n"
+				scan_lang_servers -s "${supported_langs[@]}"
+				echo -e "\n\n"
+				prompt -w "Results:\n"
+				assert_file -r
+
+				echo
 
 				;;
 			--file=?*)

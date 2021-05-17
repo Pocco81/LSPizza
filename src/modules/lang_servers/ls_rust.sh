@@ -14,3 +14,11 @@ function install_rust() {
 	:
 }
 
+function uninstall_rust() {
+
+		# mkdir -p ${LSP_BIN_PATH}
+		# curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-$(get_platform) -o ~/.local/bin/rust-analyzer
+		# chmod +x ~/.local/bin/rust-analyzer
+	:
+}
+
